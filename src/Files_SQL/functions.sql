@@ -46,3 +46,28 @@ BEGIN
     END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+
+
+// Função: Relatório de Faturamento por Filme 
+//Calcula quanto dinheiro um filme gerou somando todas as sessões dele.
+    
+CREATE OR REPLACE FUNCTION relatorio_faturamento_filme(p_titulo_filme VARCHAR) 
+RETURNS TABLE (
+    filme VARCHAR,
+    total_ingressos BIGINT,
+    faturamento_total NUMERIC
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        f.titulo,
+        SUM(i.quantidade) as total_ingressos,
+        SUM(i.quantidade * s.valor_ingresso) as faturamento_total
+    FROM filme f
+    JOIN sessao s ON f.id_filme = s.id_filme
+    JOIN ingresso i ON s.id_sessao = i.id_sessao
+    WHERE f.titulo ILIKE '%' || p_titulo_filme || '%' -- Busca por parte do nome
+    GROUP BY f.titulo;
+END;
+$$ LANGUAGE plpgsql;

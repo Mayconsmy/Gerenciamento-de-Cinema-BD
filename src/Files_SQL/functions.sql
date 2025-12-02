@@ -1,10 +1,11 @@
 -- pasta  de criação de funções sql
 
+-- Função para realizar venda, vai verificar a capacidade da sala, soma quanto ingressos foram vendidos
 CREATE OR REPLACE FUNCTION realizar_venda(
     p_id_sessao INT,
     p_id_funcionario INT,
     p_quantidade INT,
-    p_id_cliente INT DEFAULT NULL -- Pode ser nulo (Venda Avulsa - RF10)
+    p_id_cliente INT DEFAULT NULL 
 ) RETURNS TEXT AS $$
 DECLARE
     v_capacidade_sala INT;
@@ -49,9 +50,9 @@ $$ LANGUAGE plpgsql;
 
 
 
-// Função: Relatório de Faturamento por Filme 
-//Calcula quanto dinheiro um filme gerou somando todas as sessões dele.
-    
+-- Função: Relatório de Faturamento por Filme 
+--Calcula quanto dinheiro um filme gerou somando todas as sessões dele.
+
 CREATE OR REPLACE FUNCTION relatorio_faturamento_filme(p_titulo_filme VARCHAR) 
 RETURNS TABLE (
     filme VARCHAR,

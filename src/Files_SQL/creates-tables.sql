@@ -8,36 +8,35 @@ CREATE TABLE filme (
     id_filme SERIAL PRIMARY KEY, -- 
     titulo VARCHAR(150) NOT NULL,
     genero VARCHAR(100) NOT NULL,
-    duracao INTEGER NOT NULL, -- em minutos
+    duracao INTEGER NOT NULL, 
     classificacao VARCHAR(20) NOT NULL,
     sinopse TEXT
 );
 
 CREATE TABLE sala (
-    id_sala SERIAL PRIMARY KEY, -- [cite: 344]
+    id_sala SERIAL PRIMARY KEY, 
     nome_sala VARCHAR(100) NOT NULL,
     capacidade INTEGER NOT NULL,
-    tipo_sala VARCHAR(50) NOT NULL -- Ex: 2D, 3D
+    tipo_sala VARCHAR(50) NOT NULL 
 );
 
 CREATE TABLE cliente (
-    id_cliente SERIAL PRIMARY KEY, -- [cite: 355]
+    id_cliente SERIAL PRIMARY KEY, 
     nome VARCHAR(150) NOT NULL,
-    documento VARCHAR(20) NOT NULL UNIQUE, -- CPF
+    documento VARCHAR(20) NOT NULL UNIQUE, 
     email VARCHAR(150),
     telefone VARCHAR(20)
 );
 
 CREATE TABLE funcionario (
-    id_funcionario SERIAL PRIMARY KEY, -- [cite: 358]
+    id_funcionario SERIAL PRIMARY KEY, 
     nome VARCHAR(150) NOT NULL,
     cargo VARCHAR(100) NOT NULL,
     email VARCHAR(150)
 );
 
 CREATE TABLE sessao (
-    id_sessao SERIAL PRIMARY KEY, -- [cite: 348]
-    data_sessao DATE NOT NULL,
+    id_sessao SERIAL PRIMARY KEY, 
     horario_sessao TIME NOT NULL,
     valor_ingresso NUMERIC(10,2) NOT NULL,
     id_filme INTEGER NOT NULL,
@@ -47,7 +46,7 @@ CREATE TABLE sessao (
 );
 
 CREATE TABLE ingresso (
-    id_ingresso SERIAL PRIMARY KEY, -- [cite: 351]
+    id_ingresso SERIAL PRIMARY KEY, 
     quantidade INTEGER NOT NULL DEFAULT 1,
     data_venda DATE DEFAULT CURRENT_DATE,
     id_sessao INTEGER NOT NULL,

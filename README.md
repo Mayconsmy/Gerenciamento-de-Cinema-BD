@@ -1,68 +1,93 @@
+Com certeza. Baseado no conteúdo do PDF **"Projeto final - Banco de Dados"**  e nos scripts desenvolvidos na nossa conversa, criei um arquivo `README.md` estruturado.
 
-# Gerenciamento de Cinema - Banco de Dados 
+Este arquivo é ideal para colocar no repositório do projeto, pois explica o contexto (resumindo Introdução e Requisitos), instrui como rodar (seguindo a ordem dos scripts) e mostra como testar.
 
-Sobre o Projeto	:
+-----
 
-O projeto tem como objetivo desenvolver um banco de dados para um Sistema de Gerenciamento de Cinema, focado em organização e controle de filmes, sessões, salas, ingressos, clientes e funcionários. 
+# Sistema de Gerenciamento de Cinema (SGC)
 
-Funcionalidades	
-<details>
-<summary><b></b>RF01</summary>
-Cadastrar filmes: O sistema deve permitir o cadastro de filmes, incluindo informações como título, gênero, duração, classificação indicativa, sinopse e demais dados essenciais à sua exibição.
-</details>
+Este repositório contém os scripts de banco de dados para o projeto final da disciplina de Banco de Dados (UFERSA, 2025).
 
-<details>
-<summary><b></b>RF02</summary>
-Atualizar e remover filmes - O sistema deve possibilitar a edição e exclusão de filmes previamente cadastrados, garantindo sempre a integridade dos dados relacionados às sessões.
-</details>
+## 📋 Sobre o Projeto
 
-<details>
-<summary><b></b>RF03</summary>
-Gerenciar salas de cinema - O sistema deve permitir o cadastro de salas, contendo dados como capacidade de assentos, tipo de sala e características estruturais.
-</details> 
+O SGC foi modelado para otimizar as rotinas operacionais de um cinema, garantindo a integridade das vendas e o controle de lotação das salas. O banco de dados está normalizado na 3ª Forma Normal (3FN).
 
-<details>
-<summary><b></b>RF04</summary>
-Atualizar e remover salas - O sistema deve oferecer a possibilidade de alterar ou excluir salas, assegurando que a operação só seja permitida quando não houver conflitos com sessões programadas.
-</details>
-<details>
-<summary><b></b>RF05</summary>
-Registrar programação das sessões - O sistema deve permitir o registro das sessões de cinema, associando filme, sala, data, horário e demais atributos necessários para o controle da programação.
-</details>
-<details>
-<summary><b></b>RF06</summary>
-Evitar conflitos na programação - O sistema deve impedir o cadastro de sessões que utilizem a mesma sala em horários sobrepostos.
-</details>
-<details>
-<summary><b></b>RF07</summary>
-Gerenciar venda de ingressos - O sistema deve registrar a venda de ingressos, vinculando cliente, sessão e quantidade adquirida.
-</details>
-<details>
-<summary><b></b>RF08</summary>
-Controlar limite de assentos - O sistema deve verificar automaticamente a disponibilidade de assentos antes de aprovar a venda, bloqueando vendas acima da capacidade da sala.
-</details>
-<details>
-<summary><b></b>RF09</summary>
-Cadastrar clientes - O sistema deve permitir o cadastro de clientes, contendo nome, documento e informações de contato, para possibilitar a emissão de ingressos e controle de vendas.
-</details>
-<details>
-<summary><b></b>RF10</summary>
-Identificar clientes nas compras - O sistema deve permitir que cada venda seja associada a um cliente cadastrado ou marcada como venda avulsa, conforme necessidade do cinema.
-</details>
-<details>
-<summary><b></b>RF11</summary>
-Gerenciar funcionários - O sistema deve permitir o cadastro e gerenciamento de funcionários, incluindo dados pessoais, função e possíveis níveis de acesso.
-</details>
-<details>
-<summary><b></b>RF12</summary>
-Registrar operações inteiras - O sistema deve registrar quais funcionários realizaram determinadas operações, contribuindo para o controle e segurança do ambiente.
-</details>
-<details>
-<summary><b></b>RF13</summary>
-Consultar dados gerais do cinema - O sistema deve permitir consultas relacionadas a filmes, sessões, ingressos vendidos, ocupação das salas, histórico de exibições e demais informações relevantes para a gestão.
-</details>
-<details>
-<summary><b></b>RF14</summary>
-Emitir relatórios gerenciados - O sistema deve gerar relatórios, como total de vendas por sessão, filmes mais assistidos, capacidade ocupada e demais indicadores úteis à administração.
-</details>
+**Funcionalidades Principais:**
+
+  * Cadastro de Filmes, Salas e Funcionários.
+  * Programação de Sessões com controle de horários.
+  * Venda de Ingressos com bloqueio automático de lotação (Trigger).
+  * Relatórios Gerenciais de faturamento e ocupação.
+
+
+
+## Execução
+
+
+### 1\. Criação da Estrutura (DDL)
+
+Execute o script `1_create_tables.sql` para criar as tabelas com os tipos e chaves corretas (`SERIAL`, `VARCHAR`, `NUMERIC`) .
+
+  * **Tabelas:** `filme`, `sala`, `cliente`, `funcionario`, `sessao`, `ingresso`.
+
+### 2\. Carga de Dados (DML)
+
+Execute o script `2_insert_data.sql` para popular o banco com dados iniciais de teste (Filmes, Salas 2D/3D, Clientes e Sessões).
+
+### 3\. Lógica de Negócio (Triggers & Functions)
+
+Execute o script `3_functions_triggers.sql`.
+
+  * **Função:** `verificar_capacidade()` - Conta assentos ocupados.
+  * **Trigger:** `trg_verificar_lotacao` - Impede vendas que excedam a capacidade da sala.
+
+### 4\. Relatórios (Views)
+
+Execute o script `4_create_views.sql` para criar as visões de relatório:
+
+  * `view_relatorio_vendas`: Faturamento por sessão.
+  * `view_ocupacao_salas`: Porcentagem de ocupação em tempo real.
+
+-----
+
+## Testes
+
+Após rodar os scripts acima, execute os comandos abaixo para validar os requisitos:
+
+### Teste 1: Venda de Ingresso (Caminho Feliz)
+
+```sql
+INSERT INTO ingresso (quantidade, id_sessao, id_cliente, id_funcionario) 
+VALUES (1, 1, 1, 1);
+-- Resultado: Sucesso. Ingresso registrado.
+```
+
+### Teste 2: Bloqueio de Lotação (Regra de Negócio)
+
+Tente vender mais ingressos do que a capacidade da sala suporta.
+
+```sql
+-- Supondo uma sala com capacidade 50, tente inserir 51
+INSERT INTO ingresso (quantidade, id_sessao, id_cliente, id_funcionario) 
+VALUES (100, 1, 1, 1);
+-- Resultado: ERRO! "Venda não autorizada: Capacidade da sala excedida."
+```
+
+### Teste 3: Relatórios Gerenciais
+
+Consulte as Views para ver os indicadores atualizados.
+
+```sql
+SELECT * FROM view_relatorio_vendas;
+SELECT * FROM view_ocupacao_salas WHERE porcentagem_ocupacao > 0;
+```
+
+
+## 👥 Autores
+
+  * Caio Fontes Soares
+  * Isabel de Paiva Freire
+  * Ítallo Vicente de Mesquita
+  * Maycon Soares Maia
+  * Pedro Henrique Pereira de Sousa
 

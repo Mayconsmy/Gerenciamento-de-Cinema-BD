@@ -1,1 +1,0 @@
--- pasta d e gerenciamento

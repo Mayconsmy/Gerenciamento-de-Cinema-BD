@@ -1,1 +1,0 @@
--- pasta de gerenciamento de cinema

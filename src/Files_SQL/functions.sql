@@ -1,74 +1,26 @@
--- pasta  de criação de funções sql
-
--- Função para realizar venda, vai verificar a capacidade da sala, soma quanto ingressos foram vendidos
-CREATE OR REPLACE FUNCTION realizar_venda(
-    p_id_sessao INT,
-    p_id_funcionario INT,
-    p_quantidade INT,
-    p_id_cliente INT DEFAULT NULL 
-) RETURNS TEXT AS $$
+-- Função para verificar disponibilidade de assentos
+CREATE OR REPLACE FUNCTION verificar_capacidade()
+RETURNS TRIGGER AS $$
 DECLARE
-    v_capacidade_sala INT;
-    v_ingressos_vendidos INT;
-    v_sala_nome VARCHAR;
-    v_assentos_restantes INT;
+    lugares_ocupados INTEGER;
+    capacidade_sala INTEGER;
 BEGIN
-    -- 1. Busca a capacidade da sala e o nome dela através da sessão
-    SELECT s.capacidade, s.nome_sala 
-    INTO v_capacidade_sala, v_sala_nome
+    -- Busca a capacidade da sala da sessão
+    SELECT s.capacidade INTO capacidade_sala
     FROM sala s
     JOIN sessao se ON s.id_sala = se.id_sala
-    WHERE se.id_sessao = p_id_sessao;
+    WHERE se.id_sessao = NEW.id_sessao;
 
-    -- Se não achar a sessão, para tudo
-    IF NOT FOUND THEN
-        RAISE EXCEPTION 'Sessão % não encontrada.', p_id_sessao;
-    END IF;
-
-    -- 2. Soma quantos ingressos já foram vendidos para essa sessão
-    SELECT COALESCE(SUM(quantidade), 0) 
-    INTO v_ingressos_vendidos
+    -- Conta quantos ingressos já foram vendidos para esta sessão
+    SELECT COALESCE(SUM(quantidade), 0) INTO lugares_ocupados
     FROM ingresso
-    WHERE id_sessao = p_id_sessao;
+    WHERE id_sessao = NEW.id_sessao;
 
-    -- Calcula quantos sobram
-    v_assentos_restantes := v_capacidade_sala - v_ingressos_vendidos;
-
-    -- 3. Verifica se a nova quantidade cabe
-    IF p_quantidade > v_assentos_restantes THEN
-        RAISE EXCEPTION 'VENDA RECUSADA: A sala "%" só tem % lugares restantes. Você tentou vender %.', 
-        v_sala_nome, v_assentos_restantes, p_quantidade;
-    ELSE
-        -- 4. Se couber, insere na tabela INGRESSO
-        INSERT INTO ingresso (quantidade, data_venda, id_sessao, id_cliente, id_funcionario)
-        VALUES (p_quantidade, CURRENT_DATE, p_id_sessao, p_id_cliente, p_id_funcionario);
-        
-        RETURN 'Venda realizada com sucesso! Assentos restantes: ' || (v_assentos_restantes - p_quantidade);
+    -- Verifica se a nova venda ultrapassa a capacidade
+    IF (lugares_ocupados + NEW.quantidade) > capacidade_sala THEN
+        RAISE EXCEPTION 'Venda não autorizada: Capacidade da sala excedida.';
     END IF;
-END;
-$$ LANGUAGE plpgsql;
 
-
-
--- Função: Relatório de Faturamento por Filme 
---Calcula quanto dinheiro um filme gerou somando todas as sessões dele.
-
-CREATE OR REPLACE FUNCTION relatorio_faturamento_filme(p_titulo_filme VARCHAR) 
-RETURNS TABLE (
-    filme VARCHAR,
-    total_ingressos BIGINT,
-    faturamento_total NUMERIC
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT 
-        f.titulo,
-        SUM(i.quantidade) as total_ingressos,
-        SUM(i.quantidade * s.valor_ingresso) as faturamento_total
-    FROM filme f
-    JOIN sessao s ON f.id_filme = s.id_filme
-    JOIN ingresso i ON s.id_sessao = i.id_sessao
-    WHERE f.titulo ILIKE '%' || p_titulo_filme || '%' -- Busca por parte do nome
-    GROUP BY f.titulo;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

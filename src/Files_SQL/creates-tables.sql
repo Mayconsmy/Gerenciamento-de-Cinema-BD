@@ -38,6 +38,7 @@ CREATE TABLE funcionario (
 CREATE TABLE sessao (
     id_sessao SERIAL PRIMARY KEY, 
     horario_sessao TIME NOT NULL,
+	data_sessao DATE DEFAULT CURRENT_DATE,
     valor_ingresso NUMERIC(10,2) NOT NULL,
     id_filme INTEGER NOT NULL,
     id_sala INTEGER NOT NULL,

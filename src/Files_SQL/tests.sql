@@ -25,8 +25,8 @@ LEFT JOIN ingresso i ON s.id_sessao = i.id_sessao
 WHERE s.id_sessao = 1 -- Exemplo para a Sessão 1
 GROUP BY sa.nome_sala, sa.capacidade;
 
--- Teste 3: Teste do Gatilho de Lotação (Deve falhar se a sala tiver cap. 50 e tentarmos vender 51)
---  INSERT INTO ingresso (quantidade, id_sessao, id_cliente, id_funcionario) VALUES (101, 1, 1, 1);
+-- Teste 3: Teste do Gatilho de Lotação (Deve falhar se a sala tiver 50 e tentarmos vender 51)
+-- INSERT INTO ingresso (quantidade, id_sessao, id_cliente, id_funcionario) VALUES (101, 1, 1, 1);
 
 -- ultilizando as views
 -- Consultar o faturamento total por filme/sessão

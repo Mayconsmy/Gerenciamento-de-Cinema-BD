@@ -24,3 +24,11 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Tentativa de vender 60 ingressos na Sala 2 (Capacidade máx: 50)
+INSERT INTO ingresso (quantidade, id_sessao, id_cliente, id_funcionario) 
+VALUES (60, 2, 2, 1);
+
+-- Venda de apenas 1 ingresso na mesma sala (Dentro da capacidade)
+INSERT INTO ingresso (quantidade, id_sessao, id_cliente, id_funcionario) 
+VALUES (1, 2, 2, 1);
